@@ -52,9 +52,9 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'xboxgames.middlewares.MyCustomDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.contrib.downloadermiddleware.cookies.CookiesMiddleware': 543,
+}
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -64,9 +64,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#     'xboxgames.pipelines.MySQLStorePipeline': 300,
-# }
+ITEM_PIPELINES = {
+    'xboxgames.pipelines.MySQLStorePipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -90,6 +90,6 @@ ROBOTSTXT_OBEY = True
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 MYSQL_HOST = 'localhost'
-MYSQL_DBNAME = 'dirbot'
-MYSQL_USER = 'dirbot'
-MYSQL_PASSWD = ''
+MYSQL_DBNAME = 'xg'
+MYSQL_USER = 'root'
+MYSQL_PASSWD = '123456'

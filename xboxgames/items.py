@@ -11,7 +11,13 @@ import scrapy
 class XboxgamesItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    name = scrapy.Field()
-    price = scrapy.Field()
     product_id = scrapy.Field()
+    title = scrapy.Field()
+    title_zh = scrapy.Field()
+    price = scrapy.Field()
+    full_price = scrapy.Field()
+    is_gold = scrapy.Field()
+    detail_url = scrapy.Field()
+    country = scrapy.Field()
+
     pass

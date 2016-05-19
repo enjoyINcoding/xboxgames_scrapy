@@ -7,7 +7,7 @@ class PirceSpider(scrapy.Spider):
     name = "price_spider"
     allowed_domains = ["xbox.com"]
     start_urls = [
-        "https://store.xbox.com/zh-HK/Xbox-One?Page=2"
+        "https://store.xbox.com/zh-HK/Xbox-One?Page=1"
     ]
 
     def parse(self, response):
@@ -18,7 +18,7 @@ class PirceSpider(scrapy.Spider):
         current_page = response.xpath("//div[@class='currentPage']/text()").re('\d+')
         #print current_page
         next_page = int(current_page[0])+1
-        if (next_page <= 1):#int(current_page[1])):
+        if (next_page <= int(current_page[1])):
             url1 = self.start_urls[0][0:-1] + str(next_page)
             yield scrapy.Request(url1,callback=self.parse)
 
@@ -28,9 +28,12 @@ class PirceSpider(scrapy.Spider):
         #     f.write(response.body)
         for info in response.xpath("//div[@id='rightContentArea']"):
             item = XboxgamesItem()
-            item['name'] = info.xpath("div[@class='title']/text()").extract()[0].strip()
-            price = info.xpath("div[@id='purchaseInfo']/div/h1/text()").extract()
+            item['title'] = info.xpath("div[@class='title']/text()").extract()[0].strip()
+            price = info.xpath("div[@id='purchaseInfo']/div/h1/text()").re('\d+.\d+')
             if len(price):
                 item['price'] =  price[0].strip()
+            else :
+                item['price'] = 0
             item['product_id'] = response.url[-36:]
+            item['detail_url'] = response.url
             yield item

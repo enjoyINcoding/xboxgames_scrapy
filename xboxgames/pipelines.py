@@ -9,6 +9,7 @@ from hashlib import md5
 from scrapy import log
 from scrapy.exceptions import DropItem
 from twisted.enterprise import adbapi
+import time
 
 class XboxgamesPipeline(object):
     def process_item(self, item, spider):
@@ -48,27 +49,28 @@ class MySQLStorePipeline(object):
 
     def _do_upsert(self, conn, item, spider):
         """Perform an insert or update."""
-        guid = self._get_guid(item)
-        now = datetime.utcnow().replace(microsecond=0).isoformat(' ')
-
+        product_id = item['product_id']
+        #now = datetime.utcnow().replace(microsecond=0).isoformat(' ')
+        today = int(time.strftime("%Y%m%d"))
+        spider.log(type(today))
         conn.execute("""SELECT EXISTS(
-            SELECT 1 FROM website WHERE guid = %s
-        )""", (guid, ))
+            SELECT id FROM g_price WHERE product_id = %s and scrapy_date= %s
+        )""", (product_id,today ))
         ret = conn.fetchone()[0]
 
         if ret:
             conn.execute("""
-                UPDATE website
-                SET name=%s, description=%s, url=%s, updated=%s
-                WHERE guid=%s
-            """, (item['name'], item['description'], item['url'], now, guid))
-            spider.log("Item updated in db: %s %r" % (guid, item))
+                UPDATE g_price
+                SET price=%s, full_price=%s
+                WHERE id=%s
+            """, (item['price'], 0, ret))
+            spider.log("Item updated in db: %s %r" % (product_id, item))
         else:
             conn.execute("""
-                INSERT INTO website (guid, name, description, url, updated)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (guid, item['name'], item['description'], item['url'], now))
-            spider.log("Item stored in db: %s %r" % (guid, item))
+                INSERT INTO g_price ( product_id, title, title_zh, price,full_price,is_gold,scrapy_date,detail_url,country)
+                VALUES (%s, %s, %s, %s, %s,%s,%s,%s,%s)
+            """, (product_id, item['title'], '', item['price'], 0,0 ,today , item['detail_url'], 'xg'))
+            spider.log("Item stored in db: %s %r" % (product_id, item))
 
     def _handle_error(self, failure, item, spider):
         """Handle occurred on db interaction."""
